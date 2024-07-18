@@ -5,15 +5,14 @@ os.environ["MKL_NUM_THREADS"] = "3" # export MKL_NUM_THREADS=1
 os.environ["VECLIB_MAXIMUM_THREADS"] = "3" # export VECLIB_MAXIMUM_THREADS=1
 os.environ["NUMEXPR_NUM_THREADS"] = "3" # export NUMEXPR_NUM_THREADS=1
 
-import preprocessing
-import transformer
+
 import numpy as np
 import pandas as pd
 from os.path import exists
 from transformers import logging
 import argparse
-import search
-import searchGPU
+import transformer
+import dbu_cloud
 
 #for filename in ./transformed_datasets/LISA/document_wide/BERT/*; do qsub launch.sh main.py 4 BERT LISA no-sentence_wide $filename; done
 #python main.py --k 3 --dataset LISA --no-searching --transformer BERT
@@ -60,8 +59,6 @@ if args.label is None:
     label = ""
 
 
-queries = pd.read_csv("datasets/preprocessed/" + dataset + '/' + dataset + "_queries.csv", index_col=0).index.values
-
 folder = os.path.join("results", dataset, "document_wide", neuralnet, "k=" + str(k), label)
 
 
@@ -69,6 +66,6 @@ if args.searching and (args.k is None or args.file is None):
     parser.error("--searching mode requires --file, --query and --k to be specified.")
 
 if(searching):
-    searchGPU.getfileresults(file,k,dataset,neuralnet,label = label, kneuralnetwork=kneuralnetwork)
+    dbu_cloud.getfileresults(file,k,dataset,neuralnet,label = label, kneuralnetwork=kneuralnetwork)
 else:
-    searchGPU.listener(dataset,neuralnet,k,label = label)
+    dbu_cloud.listener(dataset,neuralnet,k,label = label)
